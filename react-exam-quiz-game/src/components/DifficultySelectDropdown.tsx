@@ -1,21 +1,26 @@
-interface MyButtonProps {
-    /** The text to display inside the button */
-    title: string;
-    /** Whether the button can be interacted with */
-    disabled: boolean;
-  }
+import SelectDropdown from "../common/SelectDropdown";
+import { QuizCategory } from "../model/interface/response.model";
+import { DifficultySelectDropdownProps } from "../model/props/difficultySelectDropdown.props.model";
 
-  function MyButton({ title, disabled }: MyButtonProps) {
-    return (
-      <button disabled={disabled}>{title}</button>
-    );
-  }
+export default function DifficultySelectDropdown({
+    selectedDifficulty,
+    onDifficultyChange,
+}: DifficultySelectDropdownProps) {
+    const difficultyOptions: QuizCategory[] = [
+        { id: 'easy', name: "Easy" },
+        { id: 'medium', name: "Medium" },
+        { id: 'hard', name: "Hard" },
+    ];
 
-  export default function MyApp() {
+    const label = "Difficulty";
     return (
-      <div>
-        <h1>Welcome to my app</h1>
-        <MyButton title="I'm a disabled button" disabled={true}/>
-      </div>
+        <div>
+            <SelectDropdown
+                label={label}
+                listOptions={difficultyOptions}
+                selectedValue={selectedDifficulty}
+                onValueChange={onDifficultyChange}
+            />
+        </div>
     );
-  }
+}

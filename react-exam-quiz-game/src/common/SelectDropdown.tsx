@@ -1,21 +1,38 @@
-interface MyButtonProps {
-    /** The text to display inside the button */
-    title: string;
-    /** Whether the button can be interacted with */
-    disabled: boolean;
-  }
+import Box from "@mui/material/Box";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import Select, { SelectChangeEvent } from "@mui/material/Select";
+import { QuizType } from "../model/interface/dropdown.model";
 
-  function MyButton({ title, disabled }: MyButtonProps) {
-    return (
-      <button disabled={disabled}>{title}</button>
-    );
-  }
+export default function SelectDropdown({
+    label,
+    listOptions,
+    selectedValue,
+    onValueChange,
+}: QuizType) {
+    const handleChange = (event: SelectChangeEvent) => {
+        if (onValueChange) {
+            onValueChange(event.target?.value as string);
+        }
+    };
 
-  export default function MyApp() {
     return (
-      <div>
-        <h1>Welcome to my app</h1>
-        <MyButton title="I'm a disabled button" disabled={true}/>
-      </div>
+        <Box sx={{ minWidth: 120 }}>
+            <FormControl fullWidth>
+                <InputLabel>{label}</InputLabel>
+                <Select
+                    value={selectedValue}
+                    label={label}
+                    onChange={handleChange}
+                >
+                    {listOptions?.map((option) => (
+                        <MenuItem key={option.id} value={option.id}>
+                            {option.name}
+                        </MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
+        </Box>
     );
-  }
+}

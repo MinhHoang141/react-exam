@@ -10,7 +10,7 @@ export default function AnswerButton({
     return (
         <Button
             variant="contained"
-            color={buttonColor}
+            color={buttonColor ? buttonColor : "inherit"}
             disabled={buttonDisabled}
             onClick={onAnswerClick}
         >

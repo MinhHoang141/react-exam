@@ -1,39 +1,49 @@
 import { useEffect, useState } from "react";
-import { QuizQuestion } from "../model/interface/response.model";
-import { AnswerButtonProps } from "../model/props/answerButton.props.model";
+import { ButtonColors } from "../model/enum/buttonColors.enum";
+import { QuizQuestionWithId } from "../model/interface/response.model";
+import AnswerButton from "./AnswerButton";
 
 export default function ListAnswerButton({
-    quizList,
+    quiz,
 }: {
-    quizList: QuizQuestion[];
+    quiz: QuizQuestionWithId;
 }) {
-    const [selectedOption, setSelectedOption] =
-        useState<AnswerButtonProps | null>(null);
+    const [selectedOption, setSelectedOption] = useState<string | null>(null);
+
+    // Shuffle answers when component mounts
+    const [shuffledAnswers, setShuffledAnswers] = useState<string[]>([]);
 
     useEffect(() => {
-        console.log(quizList);
-    }, []);
+        if (quiz) {
+            const allAnswers = [
+                quiz.correct_answer,
+                ...quiz.incorrect_answers,
+            ].sort(() => Math.random() - 0.5);
+            setShuffledAnswers(allAnswers);
+        }
+    }, [quiz]);
 
-    const handleAnswerClick = (option: AnswerButtonProps) => {
+    const handleAnswerClick = (option: string) => {
         setSelectedOption(option);
     };
 
     return (
-        <div className="flex justify-center items-center gap-4 p-4">
-            {/* {quizList.map((quiz, index) => (
-                <div key={index} style={{ marginBottom: "10px" }}>
+        <div style={{ marginBottom: "20px" }}>
+            <div className="flex justify-center items-center gap-4 p-4">
+                {shuffledAnswers.map((answer, index) => (
                     <AnswerButton
-                        buttonText={quiz.}
+                        key={index}
+                        buttonText={answer}
                         buttonColor={
-                            selectedOption?.buttonText === quiz.buttonText
+                            selectedOption === answer
                                 ? ButtonColors.SUCCESS
-                                : undefined
+                                : null
                         }
-                        buttonDisabled={false} // Disable buttons after selection
+                        buttonDisabled={false}
                         onAnswerClick={() => handleAnswerClick(answer)}
                     />
-                </div>
-            ))} */}
+                ))}
+            </div>
         </div>
     );
 }

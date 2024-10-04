@@ -8,9 +8,9 @@ class QuizService {
         this.apiUrl = "https://opentdb.com";
     }
 
-    async getQuizQuestions(): Promise<QuizQuestion[]> {
+    async getQuizQuestions(category: string, difficulty: string): Promise<QuizQuestion[]> {
         try {
-            const response = await axios.get(this.apiUrl + '/api.php?amount=5&type=multiple');
+            const response = await axios.get(this.apiUrl + `/api.php?amount=5&type=multiple&category=${category}&difficulty=${difficulty}`);
             return response.data.results;
         } catch (error) {
             console.error("Error fetching quiz questions:", error);
@@ -21,7 +21,7 @@ class QuizService {
     async getQuizCategories(): Promise<QuizCategory[]> {
         try {
             const response = await axios.get(this.apiUrl + '/api_category.php');
-            return response.data.results;
+            return response.data.trivia_categories;
         } catch (error) {
             console.error("Error fetching quiz categories:", error);
             throw error;

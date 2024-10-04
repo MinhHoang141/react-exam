@@ -1,21 +1,35 @@
-interface MyButtonProps {
-    /** The text to display inside the button */
-    title: string;
-    /** Whether the button can be interacted with */
-    disabled: boolean;
-  }
+import { useEffect, useState } from "react";
+import SelectDropdown from "../common/SelectDropdown";
+import { QuizCategory } from "../model/interface/response.model";
+import { CategorySelectDropdownProps } from "../model/props/categorySelectDropdown.props.model";
+import quizService from "../service/quiz.service";
 
-  function MyButton({ title, disabled }: MyButtonProps) {
-    return (
-      <button disabled={disabled}>{title}</button>
-    );
-  }
+export default function CategoriesSelectDropdown({
+    selectedCategory,
+    onCategoryChange,
+}: CategorySelectDropdownProps) {
+    const [quizCategories, setQuizCategories] = useState<QuizCategory[]>([]);
 
-  export default function MyApp() {
+    useEffect(() => {
+        const fetchCategories = async () => {
+            const response = await quizService.getQuizCategories();
+
+            setQuizCategories(response);
+        };
+
+        fetchCategories();
+    }, []);
+
+    const label = "Categories";
+
     return (
-      <div>
-        <h1>Welcome to my app</h1>
-        <MyButton title="I'm a disabled button" disabled={true}/>
-      </div>
+        <div>
+            <SelectDropdown
+                label={label}
+                listOptions={quizCategories}
+                selectedValue={selectedCategory}
+                onValueChange={onCategoryChange}
+            />
+        </div>
     );
-  }
+}

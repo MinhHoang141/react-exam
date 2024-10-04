@@ -10,7 +10,16 @@ export interface QuizQuestion {
     disabled?: boolean;
 }
 
+export interface QuizQuestionWithId extends QuizQuestion {
+    id?: string; // Add the id field
+}
+
+
 export interface QuizCategory {
-    id: number;
+    id: string;
     name: string;
+}
+
+export interface QuizCategoryResponse {
+    trivia_categories: QuizCategory[];
 }
