@@ -11,7 +11,7 @@ export interface QuizQuestion {
 }
 
 export interface QuizQuestionWithId extends QuizQuestion {
-    id?: string; // Add the id field
+    id: string; // Add the id field
 }
 
 

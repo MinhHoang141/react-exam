@@ -23,7 +23,7 @@ export default function CategoriesSelectDropdown({
     const label = "Categories";
 
     return (
-        <div>
+        <div id="categorySelect">
             <SelectDropdown
                 label={label}
                 listOptions={quizCategories}

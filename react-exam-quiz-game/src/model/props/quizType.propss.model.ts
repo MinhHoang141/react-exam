@@ -1,5 +1,6 @@
-import { QuizQuestion } from "../interface/response.model";
+import { QuizQuestionWithId } from "../interface/response.model";
 
 export interface QuizTypeProps {
-    setQuizList: (quizList: QuizQuestion[]) => void;
+    setQuizList: (quizList: QuizQuestionWithId[]) => void;
+    resetTrigger: string;
 }

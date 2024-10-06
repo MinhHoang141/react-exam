@@ -10,11 +10,11 @@ export default function AnswerButton({
     return (
         <Button
             variant="contained"
-            color={buttonColor ? buttonColor : "inherit"}
+            color={buttonColor || undefined}
             disabled={buttonDisabled}
             onClick={onAnswerClick}
         >
-            {buttonText}
+            <span dangerouslySetInnerHTML={{__html: buttonText}}></span>
         </Button>
     );
 }

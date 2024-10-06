@@ -1,53 +1,113 @@
 import { Button } from "@mui/material";
-import { useEffect, useState } from "react";
-import { v4 as uuidv4 } from "uuid";
+import { useState, useEffect } from "react";
 import ListAnswerButton from "../common/ListAnswerButton";
 import { QuizQuestionWithId } from "../model/interface/response.model";
-import { QuizListProps } from "../model/props/quizList.props.model";
 
-export default function QuizList({ quizList }: QuizListProps) {
-    const [updatedQuizList, setUpdatedQuizList] = useState<QuizQuestionWithId[]>([]);
+export default function QuizList({
+    quizList,
+    resetQuiz,
+}: {
+    quizList: QuizQuestionWithId[];
+    resetQuiz: () => void;
+}) {
+    const [selectedAnswers, setSelectedAnswers] = useState<{
+        [key: string]: string;
+    }>({});
+    const [isSubmitted, setIsSubmitted] = useState(false);
+    const [correctCount, setCorrectCount] = useState(0);
+    const [resultColor, setResultColor] = useState("");
 
-    useEffect(() => {
-        if (quizList.length === 0) {
-            return;
+    // Handle answer selection for each quiz
+    const handleAnswerClick = (quizId: string, answer: string) => {
+        setSelectedAnswers((prev) => ({
+            ...prev,
+            [quizId]: answer,
+        }));
+    };
+
+    // Check if all answers have been selected
+    const allAnswersSelected =
+        quizList.length === Object.keys(selectedAnswers).length;
+
+    // Handle submission
+    const submitAnswer = () => {
+        setIsSubmitted(true);
+
+        let count = 0;
+        quizList.forEach((quiz) => {
+            if (selectedAnswers[quiz.id] === quiz.correct_answer) {
+                count += 1;
+            }
+        });
+        if (count <= 1) {
+            setResultColor("red");
+        }
+        if (count > 1 && count <= 3) {
+            setResultColor("yellow");
+        }
+        if (count > 3) {
+            setResultColor("green");
         }
 
-        const updatedQuizListFromResponse: QuizQuestionWithId[] = quizList.map(
-            (quiz) => ({
-                ...quiz,
-                id: uuidv4() as string, // Assign unique id to each question
-            })
-        );
+        setCorrectCount(count);
+    };
 
-        setUpdatedQuizList(updatedQuizListFromResponse);
-    }, [quizList]);
-
-    const submitAnswer = () => {
-        // Implement the logic to submit the answer
+    // Handle resetting the quiz and resetting the dropdown values
+    const createNewQuiz = () => {
+        setSelectedAnswers({});
+        setIsSubmitted(false);
+        setCorrectCount(0);
+        resetQuiz(); // Call the resetQuiz prop to handle the reset in parent component
     };
 
     return (
         <div>
-            {updatedQuizList.length === 0 ? (
+            {quizList.length === 0 ? (
                 <p>No quiz questions available</p>
             ) : (
-                <div>
-                    {updatedQuizList.map((quiz) => (
+                <div className="flex flex-col justify-center items-center">
+                    {quizList.map((quiz) => (
                         <div key={quiz.id} style={{ marginBottom: "10px" }}>
-                            <h3>{quiz.question}</h3>
-                            {/* Pass individual quiz object to ListAnswerButton */}
-                            <ListAnswerButton quiz={quiz} />
+                            <ListAnswerButton
+                                quiz={quiz}
+                                isSubmitted={isSubmitted}
+                                selectedAnswer={
+                                    selectedAnswers[quiz.id] || null
+                                }
+                                correctAnswer={quiz.correct_answer}
+                                onAnswerClick={(answer) =>
+                                    handleAnswerClick(quiz.id, answer)
+                                }
+                            />
                         </div>
                     ))}
 
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={submitAnswer}
-                    >
-                        Submit Answers
-                    </Button>
+                    {allAnswersSelected && !isSubmitted && (
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={submitAnswer}
+                        >
+                            Submit Answers
+                        </Button>
+                    )}
+
+                    {isSubmitted && (
+                        <div style={{ marginTop: "20px", textAlign: "center" }}>
+                            <p style={{ backgroundColor: resultColor }}>
+                                You scored {correctCount} out of{" "}
+                                {quizList.length}
+                            </p>
+                            <Button
+                                variant="contained"
+                                color="secondary"
+                                onClick={createNewQuiz}
+                                style={{ marginTop: "10px" }}
+                            >
+                                Create a new quiz
+                            </Button>
+                        </div>
+                    )}
                 </div>
             )}
         </div>

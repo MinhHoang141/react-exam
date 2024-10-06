@@ -14,7 +14,7 @@ export default function DifficultySelectDropdown({
 
     const label = "Difficulty";
     return (
-        <div>
+        <div id="difficultySelect">
             <SelectDropdown
                 label={label}
                 listOptions={difficultyOptions}
