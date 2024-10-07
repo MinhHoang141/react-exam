@@ -1,49 +1,47 @@
 import { Button } from "@mui/material";
-import { useState, useEffect } from "react";
-import { v4 as uuidv4 } from "uuid"; // For generating unique IDs
-import { QuizQuestionWithId } from "../model/interface/response.model"; // Import the correct type
-import { QuizTypeProps } from "../model/props/quizType.propss.model";
+import { useEffect, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
+import { QuizQuestion, QuizQuestionWithId } from "../model/interface/response.model";
+import { QuizTypeProps } from "../model/props/quizType.props.model";
 import quizService from "../service/quiz.service";
 import CategoriesSelectDropdown from "./CategoriesSelectDropdown";
 import DifficultySelectDropdown from "./DifficultySelectDropdown";
 
-export default function QuizType({ setQuizList, resetTrigger }: QuizTypeProps) {
+export default function QuizType({ setQuizList }: QuizTypeProps): JSX.Element {
     const [selectedCategory, setSelectedCategory] = useState<string>("");
     const [selectedDifficulty, setSelectedDifficulty] = useState<string>("");
-    const [isQuizFetched, setIsQuizFetched] = useState<boolean>(false); // New state to track whether the quiz is fetched
-    const [isLoading, setIsLoading] = useState<boolean>(false); // New state to track whether the quiz is fetched
+    const [isQuizFetched, setIsQuizFetched] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
-    // Reset category and difficulty when resetTrigger changes
-    useEffect(() => {
+    useEffect((): void => {
         setSelectedCategory("");
         setSelectedDifficulty("");
-        setIsQuizFetched(false); // Reset the state when the reset trigger changes
+        setIsQuizFetched(false);
         setIsLoading(false);
-        setQuizList([]); // Clear quiz list
-    }, [resetTrigger]);
+        setQuizList([]);
+    }, [setQuizList]);
 
-    const handleCategoryChange = (category: string) => {
+    const handleCategoryChange = (category: string): void => {
         setSelectedCategory(category);
     };
 
-    const handleDifficultyChange = (difficulty: string) => {
+    const handleDifficultyChange = (difficulty: string): void => {
         setSelectedDifficulty(difficulty);
     };
 
-    const shuffleArray = (array: any[]) => {
+    const shuffleArray = (array: QuizQuestion[]): QuizQuestion[] => {
         for (let i = array.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
+            [array[i]!, array[j]!] = [array[j]!, array[i]!];
         }
         return array;
     };
 
-    const handleCallingGetQuiz = async () => {
+    const handleCallingGetQuiz = async (): Promise<void> => {
         if (selectedCategory && selectedDifficulty) {
             try {
                 setIsLoading(true);
 
-                // Fetch the quiz questions from the service
                 const response = await quizService.getQuizQuestions(
                     selectedCategory,
                     selectedDifficulty
@@ -51,11 +49,10 @@ export default function QuizType({ setQuizList, resetTrigger }: QuizTypeProps) {
 
                 const shuffledQuestions = shuffleArray(response);
 
-                // Add a unique ID to each quiz question
                 const quizWithIds: QuizQuestionWithId[] = shuffledQuestions.map(
                     (quiz) => ({
                         ...quiz,
-                        id: uuidv4(), // Assign a unique id to each question
+                        id: uuidv4(),
                     })
                 );
 
@@ -85,6 +82,7 @@ export default function QuizType({ setQuizList, resetTrigger }: QuizTypeProps) {
                 onDifficultyChange={handleDifficultyChange}
             />
             <Button
+                id="createBtn"
                 variant="contained"
                 color="primary"
                 disabled={

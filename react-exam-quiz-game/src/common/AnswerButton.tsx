@@ -6,7 +6,7 @@ export default function AnswerButton({
     buttonColor,
     buttonDisabled,
     onAnswerClick,
-}: AnswerButtonProps) {
+}: AnswerButtonProps): JSX.Element {
     return (
         <Button
             variant="contained"

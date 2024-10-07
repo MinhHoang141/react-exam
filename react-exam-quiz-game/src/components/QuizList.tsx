@@ -1,72 +1,83 @@
 import { Button } from "@mui/material";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import ListAnswerButton from "../common/ListAnswerButton";
-import { QuizQuestionWithId } from "../model/interface/response.model";
+import { QuizQuestion, QuizQuestionWithId } from "../model/interface/response.model";
 
 export default function QuizList({
     quizList,
-    resetQuiz,
 }: {
     quizList: QuizQuestionWithId[];
-    resetQuiz: () => void;
-}) {
+}): JSX.Element {
     const [selectedAnswers, setSelectedAnswers] = useState<{
         [key: string]: string;
     }>({});
     const [isSubmitted, setIsSubmitted] = useState(false);
-    const [correctCount, setCorrectCount] = useState(0);
-    const [resultColor, setResultColor] = useState("");
+    const [shuffledAnswers, setShuffledAnswers] = useState<{
+        [key: string]: string[];
+    }>({});
 
-    // Handle answer selection for each quiz
-    const handleAnswerClick = (quizId: string, answer: string) => {
+    const navigate = useNavigate();
+
+    const shuffleAnswers = (quiz: QuizQuestion): string[] => {
+        const allAnswers = [quiz.correct_answer, ...quiz.incorrect_answers];
+        return allAnswers?.sort(() => Math.random() - 0.5);
+    };
+
+    useEffect(() => {
+        const shuffled = quizList?.reduce((acc, quiz) => {
+            acc[quiz.id] = shuffleAnswers(quiz);
+            return acc;
+        }, {} as { [key: string]: string[] });
+        setShuffledAnswers(shuffled);
+    }, [quizList]);
+
+    const handleAnswerClick = (quizId: string, answer: string): void => {
         setSelectedAnswers((prev) => ({
             ...prev,
             [quizId]: answer,
         }));
     };
 
-    // Check if all answers have been selected
     const allAnswersSelected =
-        quizList.length === Object.keys(selectedAnswers).length;
+        quizList?.length === Object.keys(selectedAnswers).length;
 
-    // Handle submission
-    const submitAnswer = () => {
+    function decodeHtmlEntities(text: string): string {
+        const textArea = document.createElement("textarea");
+        textArea.innerHTML = text;
+        return textArea.value;
+    }
+
+    const submitAnswer = (): void => {
         setIsSubmitted(true);
 
         let count = 0;
-        quizList.forEach((quiz) => {
-            if (selectedAnswers[quiz.id] === quiz.correct_answer) {
+        quizList?.forEach((quiz) => {
+            const selected = decodeHtmlEntities(selectedAnswers[quiz.id] || "");
+            const correct = decodeHtmlEntities(quiz.correct_answer);
+
+            if (selected === correct) {
                 count += 1;
             }
         });
-        if (count <= 1) {
-            setResultColor("red");
-        }
-        if (count > 1 && count <= 3) {
-            setResultColor("yellow");
-        }
-        if (count > 3) {
-            setResultColor("green");
-        }
 
-        setCorrectCount(count);
-    };
-
-    // Handle resetting the quiz and resetting the dropdown values
-    const createNewQuiz = () => {
-        setSelectedAnswers({});
-        setIsSubmitted(false);
-        setCorrectCount(0);
-        resetQuiz(); // Call the resetQuiz prop to handle the reset in parent component
+        navigate("/results", {
+            state: {
+                selectedAnswers,
+                correctCount: count,
+                quizList,
+                shuffledAnswers,
+            },
+        });
     };
 
     return (
         <div>
-            {quizList.length === 0 ? (
+            {quizList?.length === 0 ? (
                 <p>No quiz questions available</p>
             ) : (
                 <div className="flex flex-col justify-center items-center">
-                    {quizList.map((quiz) => (
+                    {quizList?.map((quiz) => (
                         <div key={quiz.id} style={{ marginBottom: "10px" }}>
                             <ListAnswerButton
                                 quiz={quiz}
@@ -75,6 +86,7 @@ export default function QuizList({
                                     selectedAnswers[quiz.id] || null
                                 }
                                 correctAnswer={quiz.correct_answer}
+                                shuffledAnswers={shuffledAnswers[quiz.id] as string[]}
                                 onAnswerClick={(answer) =>
                                     handleAnswerClick(quiz.id, answer)
                                 }
@@ -90,23 +102,6 @@ export default function QuizList({
                         >
                             Submit Answers
                         </Button>
-                    )}
-
-                    {isSubmitted && (
-                        <div style={{ marginTop: "20px", textAlign: "center" }}>
-                            <p style={{ backgroundColor: resultColor }}>
-                                You scored {correctCount} out of{" "}
-                                {quizList.length}
-                            </p>
-                            <Button
-                                variant="contained"
-                                color="secondary"
-                                onClick={createNewQuiz}
-                                style={{ marginTop: "10px" }}
-                            >
-                                Create a new quiz
-                            </Button>
-                        </div>
                     )}
                 </div>
             )}

@@ -5,7 +5,7 @@ import { DifficultySelectDropdownProps } from "../model/props/difficultySelectDr
 export default function DifficultySelectDropdown({
     selectedDifficulty,
     onDifficultyChange,
-}: DifficultySelectDropdownProps) {
+}: DifficultySelectDropdownProps): JSX.Element {
     const difficultyOptions: QuizCategory[] = [
         { id: 'easy', name: "Easy" },
         { id: 'medium', name: "Medium" },
@@ -13,6 +13,7 @@ export default function DifficultySelectDropdown({
     ];
 
     const label = "Difficulty";
+
     return (
         <div id="difficultySelect">
             <SelectDropdown

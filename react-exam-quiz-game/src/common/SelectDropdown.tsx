@@ -10,8 +10,8 @@ export default function SelectDropdown({
     listOptions,
     selectedValue,
     onValueChange,
-}: QuizType) {
-    const handleChange = (event: SelectChangeEvent) => {
+}: QuizType): JSX.Element {
+    const handleChange = (event: SelectChangeEvent): void => {
         if (onValueChange) {
             onValueChange(event.target?.value as string);
         }

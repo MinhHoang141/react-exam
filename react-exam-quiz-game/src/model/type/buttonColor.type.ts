@@ -1,1 +1,1 @@
-export type ButtonColor = "success" | "error" | undefined;
+export type ButtonColorType = "success" | "error" | undefined;

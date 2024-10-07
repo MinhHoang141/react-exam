@@ -7,11 +7,11 @@ import quizService from "../service/quiz.service";
 export default function CategoriesSelectDropdown({
     selectedCategory,
     onCategoryChange,
-}: CategorySelectDropdownProps) {
+}: CategorySelectDropdownProps): JSX.Element {
     const [quizCategories, setQuizCategories] = useState<QuizCategory[]>([]);
 
     useEffect(() => {
-        const fetchCategories = async () => {
+        const fetchCategories = async (): Promise<void> => {
             const response = await quizService.getQuizCategories();
 
             setQuizCategories(response);
