@@ -1,11 +1,12 @@
 import { Button } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
 import { QuizQuestionWithId } from "../model/interface/response.model";
+import { ResultsState } from "../model/interface/result.model";
 
 export default function ResultsScreen(): JSX.Element {
     const location = useLocation();
     const navigate = useNavigate();
-    const { selectedAnswers, correctCount, quizList, shuffledAnswers } = location.state || {};
+    const { selectedAnswers, correctCount, quizList, shuffledAnswers }: ResultsState = location.state || {};
 
     if (!selectedAnswers || !quizList || !shuffledAnswers) {
         return <p>No results to display. Please complete a quiz first.</p>;
